@@ -6,6 +6,8 @@ import com.okta.jwt.JwtHelper;
 import com.okta.jwt.JwtVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,10 +20,14 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Value("${okta.login-uri}")
+    private String loginUrl;
 
     private JwtVerifier jwtVerifier;
 
@@ -42,13 +48,15 @@ public class OpenIdConnectFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
 
         OAuth2AccessToken accessToken;
         try {
             accessToken = restTemplate.getAccessToken();
         } catch (final OAuth2Exception e) {
-            throw new BadCredentialsException("Could not obtain access token", e);
+            response.sendRedirect(loginUrl);
+            return null;
+            //throw new BadCredentialsException("Could not obtain access token", e);
         }
         try {
             final String idToken = accessToken.getAdditionalInformation().get("id_token").toString();

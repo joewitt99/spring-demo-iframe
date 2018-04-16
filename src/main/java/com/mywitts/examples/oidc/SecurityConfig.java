@@ -28,6 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Value("${okta.audience}")
     private String audience;
 
+    @Value("${okta.allow-origin}")
+    private String allowOrigin;
+
+    @Value("${okta.login-uri}")
+    private String loginUrl;
+
     @Autowired
     private OAuth2RestTemplate restTemplate;
 
@@ -50,12 +56,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .addFilterAfter(new OAuth2ClientContextFilter(), AbstractPreAuthenticatedProcessingFilter.class)
                 .addFilterAfter(myFilter(),
                         OAuth2ClientContextFilter.class)
-                .httpBasic().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/okta-login"))
-                .and()
+                //.exceptionHandling().accessDeniedPage(loginUrl)
+                //.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint(loginUrl))
                 .authorizeRequests()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated().and().httpBasic().authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/okta-login"));
 
-        http.headers().frameOptions().and().addHeaderWriter(new XFrameOptionsHeaderWriter(new StaticAllowFromStrategy(new URI("http://localhost:4200")) ));
+        http.exceptionHandling().accessDeniedHandler((request, response, exc) -> {
+            response.sendRedirect(loginUrl);
+        });
+
+        http.headers().frameOptions().and().addHeaderWriter(new XFrameOptionsHeaderWriter(new StaticAllowFromStrategy(new URI(allowOrigin)) ));
     }
 
 

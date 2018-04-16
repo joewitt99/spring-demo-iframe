@@ -9,3 +9,5 @@ okta.jwk-set-uri={authorizationServer keys URI}
 okta.redirect-uri={redirect URI}
 okta.issuer-uri={authorizationServer issuer URI}
 okta.audience={authorizationServer audience}
+okta.login-uri=http://localhost:4200/login
+okta.allow-origin=http://localhost:4200
