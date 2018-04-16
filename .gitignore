@@ -22,3 +22,7 @@ nbbuild/
 dist/
 nbdist/
 .nb-gradle/
+
+### ignore application.properties
+src/main/resources/application.*
+!src/main/resources/application.properties.example

@@ -1,0 +1,11 @@
+server.port=8081
+logging.level.com.mywitts.examples=DEBUG
+okta.client-id={clientId}
+okta.client-secret={clientSecret}
+okta.authorization-uri={authorizationServer}
+okta.token-uri={authorizationServer Token URI}
+okta.user-info-uri={authorizationServer userInfo URI}
+okta.jwk-set-uri={authorizationServer keys URI}
+okta.redirect-uri={redirect URI}
+okta.issuer-uri={authorizationServer issuer URI}
+okta.audience={authorizationServer audience}
